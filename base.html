@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>{% block title %}Forensic Evidence Ledger{% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}"/>
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="{{ url_for('dashboard') if session.get('user_id') else url_for('login') }}">
+        FORENSIC EVIDENCE LEDGER <span>Chain-of-Custody &amp; Integrity System</span>
+      </a>
+      {% if session.get('user_id') %}
+      <div class="user-meta">
+        {{ session.get('username') }} &middot; <strong>{{ session.get('role')|upper }}</strong>
+        <a href="{{ url_for('logout') }}">Logout</a>
+      </div>
+      {% endif %}
+    </div>
+  </header>
+
+  {% if session.get('user_id') %}
+  <nav class="navbar">
+    <div class="nav-inner">
+      <a href="{{ url_for('dashboard') }}">Dashboard</a>
+      <a href="{{ url_for('case_list') }}">Cases</a>
+      <a href="{{ url_for('evidence_list') }}">Evidence</a>
+      {% if has_perm('report') %}
+      <a href="{{ url_for('reports_page') }}">Reports</a>
+      {% endif %}
+      {% if has_perm('audit') %}
+      <a href="{{ url_for('audit_view') }}">Audit Log</a>
+      {% endif %}
+      {% if has_perm('users') %}
+      <a href="{{ url_for('users_view') }}">Users</a>
+      {% endif %}
+    </div>
+  </nav>
+  {% endif %}
+
+  <main class="container">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for cat, msg in messages %}
+          <div class="alert {{ 'alert-error' if cat == 'error' else 'alert-success' }}">{{ msg }}</div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+    {% block content %}{% endblock %}
+  </main>
+</body>
+</html>

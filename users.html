@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+{% block title %}User Management — Forensic Evidence Ledger{% endblock %}
+{% block content %}
+<div class="page-header">
+  <h1>User Management</h1>
+</div>
+
+<div class="card">
+  <h3>Create New User</h3>
+  <form method="post">
+    <input type="hidden" name="form_action" value="create"/>
+    <div class="form-grid">
+      <div class="form-group">
+        <label>Username *</label>
+        <input type="text" name="username" required/>
+      </div>
+      <div class="form-group">
+        <label>Full Name *</label>
+        <input type="text" name="full_name" required/>
+      </div>
+      <div class="form-group">
+        <label>Role *</label>
+        <select name="role">
+          <option value="Officer">Officer</option>
+          <option value="Laboratory">Laboratory</option>
+          <option value="Custodian">Custodian</option>
+          <option value="Reviewer">Reviewer</option>
+          <option value="Admin">Admin</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Password *</label>
+        <input type="password" name="password" required/>
+      </div>
+    </div>
+    <button class="btn" type="submit">Create User</button>
+  </form>
+</div>
+
+<div class="card">
+  <h3>Registered Users</h3>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Username</th>
+          <th>Full Name</th>
+          <th>Role</th>
+          <th>Status</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for u in users %}
+        <tr>
+          <td><strong>{{ u.username }}</strong></td>
+          <td>{{ u.full_name }}</td>
+          <td>{{ u.role }}</td>
+          <td>
+            {% if u.active %}
+              <span class="badge badge-ok">ACTIVE</span>
+            {% else %}
+              <span class="badge badge-bad">DISABLED</span>
+            {% endif %}
+          </td>
+          <td>
+            {% if u.id != session.get('user_id') %}
+            <form method="post" style="display:inline;">
+              <input type="hidden" name="form_action" value="toggle"/>
+              <input type="hidden" name="user_id" value="{{ u.id }}"/>
+              <button class="btn btn-secondary" style="padding:0.3rem 0.6rem; font-size:0.8rem;" type="submit">
+                {{ 'Disable' if u.active else 'Enable' }}
+              </button>
+            </form>
+            {% else %}
+              <span style="color:var(--muted); font-size:0.8rem;">Current Session</span>
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

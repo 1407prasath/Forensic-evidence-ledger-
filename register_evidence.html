@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% block title %}Register Evidence — Forensic Evidence Ledger{% endblock %}
+{% block content %}
+<div class="page-header">
+  <h1>Register Evidence</h1>
+  <a class="btn btn-secondary" href="{{ url_for('evidence_list') }}">&larr; Back to Evidence</a>
+</div>
+
+<div class="card">
+  <form method="post" enctype="multipart/form-data">
+    <div class="form-grid">
+      <div class="form-group">
+        <label>Evidence ID</label>
+        <input type="text" name="evidence_id" value="{{ suggested_id }}" required/>
+      </div>
+      <div class="form-group">
+        <label>Case *</label>
+        <select name="case_id" required>
+          {% for c in cases %}
+          <option value="{{ c.case_id }}">{{ c.case_id }} &mdash; {{ c.fir_number }} ({{ c.crime_type }})</option>
+          {% else %}
+          <option value="">-- Create a Case First --</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Evidence Type *</label>
+        <input type="text" name="evidence_type" placeholder="e.g., Digital Storage Device / Document" required/>
+      </div>
+      <div class="form-group">
+        <label>Description</label>
+        <input type="text" name="description" placeholder="e.g., Laptop hard-disk image file"/>
+      </div>
+      <div class="form-group">
+        <label>Serial No.</label>
+        <input type="text" name="serial_no" placeholder="e.g., SN-88A12"/>
+      </div>
+      <div class="form-group">
+        <label>Condition</label>
+        <input type="text" name="condition" value="Good" required/>
+      </div>
+      <div class="form-group">
+        <label>Seizure Location</label>
+        <input type="text" name="seizure_location" placeholder="e.g., Customer residence, Vellore"/>
+      </div>
+      <div class="form-group">
+        <label>Seizure Date/Time</label>
+        <input type="text" name="seizure_at" placeholder="e.g., 2026-10-06 09:10 AM"/>
+      </div>
+      <div class="form-group">
+        <label>Seal No.</label>
+        <input type="text" name="seal_no" placeholder="e.g., SEAL-0457"/>
+      </div>
+      <div class="form-group">
+        <label>Storage Location *</label>
+        <input type="text" name="location" placeholder="e.g., Evidence Locker 3, Cyber Crime PS" required/>
+      </div>
+      <div class="form-group">
+        <label>Evidence File * (Max 100 MB)</label>
+        <input type="file" name="file" required/>
+      </div>
+      <div class="form-group">
+        <label>Notes</label>
+        <input type="text" name="notes" placeholder="Optional forensic notes"/>
+      </div>
+    </div>
+    <button class="btn" type="submit">Register &amp; Hash</button>
+  </form>
+</div>
+{% endblock %}

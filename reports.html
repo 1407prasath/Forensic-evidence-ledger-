@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% block title %}Reports & Export — Forensic Evidence Ledger{% endblock %}
+{% block content %}
+<div class="page-header">
+  <h1>Reports &amp; Export</h1>
+</div>
+
+<div class="grid-3">
+  <div class="card">
+    <h3>Evidence PDF</h3>
+    <p style="color:var(--muted); font-size:0.88rem; margin-bottom:1rem;">
+      Open any evidence record and download a printable Chain-of-Custody &amp; Integrity PDF report.
+    </p>
+    <a class="btn btn-secondary" href="{{ url_for('evidence_list') }}">Browse Evidence</a>
+  </div>
+
+  <div class="card">
+    <h3>JSON Export</h3>
+    <p style="color:var(--muted); font-size:0.88rem; margin-bottom:1rem;">
+      Export the complete structured ledger (cases, evidence, hashes, custody events) as JSON.
+    </p>
+    <a class="btn" href="{{ url_for('export_full_ledger') }}">Export Full Ledger JSON</a>
+  </div>
+
+  <div class="card">
+    <h3>QR Verification</h3>
+    <p style="color:var(--muted); font-size:0.88rem; margin-bottom:1rem;">
+      Each evidence record generates a dynamic QR code linking directly to its live verification page.
+    </p>
+    <a class="btn btn-secondary" href="{{ url_for('evidence_list') }}">View QR Codes</a>
+  </div>
+</div>
+
+{% if items %}
+<div class="card">
+  <h3>Quick Evidence Exports</h3>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Evidence ID</th>
+          <th>Case ID</th>
+          <th>Type</th>
+          <th>Exports</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for item in items %}
+        <tr>
+          <td><a href="{{ url_for('evidence_detail', evidence_id=item.evidence_id) }}">{{ item.evidence_id }}</a></td>
+          <td>{{ item.case_id }}</td>
+          <td>{{ item.evidence_type }}</td>
+          <td style="display:flex; gap:0.5rem;">
+            <a class="btn btn-secondary" style="padding:0.3rem 0.6rem; font-size:0.8rem;" href="{{ url_for('evidence_report', evidence_id=item.evidence_id) }}">PDF</a>
+            <a class="btn btn-secondary" style="padding:0.3rem 0.6rem; font-size:0.8rem;" href="{{ url_for('export_json', evidence_id=item.evidence_id) }}">JSON</a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+{% block title %}{{ ev.evidence_id }} — Forensic Evidence Ledger{% endblock %}
+{% block content %}
+<div class="page-header">
+  <h1>{{ ev.evidence_id }}</h1>
+  <div style="display:flex; flex-wrap:wrap; gap:0.5rem;">
+    <a class="btn" href="{{ url_for('verify_page', evidence_id=ev.evidence_id) }}">Verify Integrity</a>
+    {% if has_perm('report') %}
+    <a class="btn btn-secondary" href="{{ url_for('evidence_report', evidence_id=ev.evidence_id) }}">PDF Report</a>
+    <a class="btn btn-secondary" href="{{ url_for('export_json', evidence_id=ev.evidence_id) }}">JSON Export</a>
+    {% endif %}
+  </div>
+</div>
+
+<div class="grid-2">
+  <div class="card">
+    <h3>Evidence Metadata</h3>
+    <div class="kv-row"><strong>Case ID:</strong> {{ ev.case_id }}</div>
+    <div class="kv-row"><strong>FIR No:</strong> {{ ev.fir_number }}</div>
+    <div class="kv-row"><strong>Evidence Type:</strong> {{ ev.evidence_type }}</div>
+    {% if ev.description %}<div class="kv-row"><strong>Description:</strong> {{ ev.description }}</div>{% endif %}
+    {% if ev.serial_no %}<div class="kv-row"><strong>Serial No:</strong> {{ ev.serial_no }}</div>{% endif %}
+    <div class="kv-row"><strong>Condition:</strong> {{ ev.condition }}</div>
+    {% if ev.seizure_location %}<div class="kv-row"><strong>Seizure Location:</strong> {{ ev.seizure_location }}</div>{% endif %}
+    {% if ev.seizure_at %}<div class="kv-row"><strong>Seizure At:</strong> {{ ev.seizure_at }}</div>{% endif %}
+    {% if ev.seal_no %}<div class="kv-row"><strong>Seal No:</strong> {{ ev.seal_no }}</div>{% endif %}
+    <div class="kv-row"><strong>Storage Location:</strong> {{ ev.location }}</div>
+    <div class="kv-row"><strong>File Name:</strong> {{ ev.file_name }}</div>
+    <div class="kv-row"><strong>Registered SHA-256:</strong><br/><span class="mono">{{ ev.sha256 }}</span></div>
+    <div class="kv-row">
+      <strong>Integrity Status:</strong>
+      {% if status_info.status == 'VERIFIED' %}
+        <span class="badge badge-ok">VERIFIED</span>
+      {% elif status_info.status == 'FILE_MISSING' %}
+        <span class="badge badge-warn">FILE_MISSING</span>
+      {% else %}
+        <span class="badge badge-bad">POSSIBLE_TAMPERING</span>
+      {% endif %}
+    </div>
+    <div style="margin-top:0.75rem;">
+      <a href="{{ url_for('download_evidence_file', evidence_id=ev.evidence_id) }}" style="color:#60a5fa; font-size:0.9rem;">Download evidence file</a>
+    </div>
+    <div class="qr-box">
+      <img src="{{ url_for('evidence_qr', evidence_id=ev.evidence_id) }}" alt="Verification QR" width="130" height="130"/>
+    </div>
+  </div>
+
+  {% if has_perm('custody') %}
+  <div class="card">
+    <h3>Record Custody Transfer / Action</h3>
+    <form method="post" action="{{ url_for('transfer', evidence_id=ev.evidence_id) }}">
+      <div class="form-group">
+        <label>Action Type</label>
+        <select name="action">
+          <option value="TRANSFERRED">TRANSFERRED</option>
+          <option value="RECEIVED">RECEIVED</option>
+          <option value="ANALYSED">ANALYSED</option>
+          <option value="STORED">STORED</option>
+          <option value="ACCESSED">ACCESSED</option>
+          <option value="RELEASED">RELEASED</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>From</label>
+        <input type="text" name="from_user" value="{{ session.get('username') }}" required/>
+      </div>
+      <div class="form-group">
+        <label>To (Recipient / Lab / Custodian) *</label>
+        <input type="text" name="to_user" placeholder="e.g., Forensic Laboratory / custodian" required/>
+      </div>
+      <div class="form-group">
+        <label>New Location *</label>
+        <input type="text" name="location" placeholder="e.g., Forensic Science Laboratory, Room 2" required/>
+      </div>
+      <div class="form-group">
+        <label>Condition</label>
+        <input type="text" name="condition" value="{{ ev.condition }}"/>
+      </div>
+      <div class="form-group">
+        <label>Notes</label>
+        <textarea name="notes" rows="2" placeholder="Handover remarks"></textarea>
+      </div>
+      <button class="btn" type="submit">Record Transfer</button>
+    </form>
+  </div>
+  {% endif %}
+</div>
+
+<div class="card">
+  <h3>Chain of Custody (Hash-Linked Timeline)</h3>
+  {% for e in events %}
+  <div class="timeline-item">
+    <div class="timeline-title">{{ loop.index }}. {{ e.action }} &mdash; <span class="mono">{{ e.event_time }}</span></div>
+    <div class="timeline-sub">
+      {{ e.from_user or 'Initial' }} &rarr; {{ e.to_user or '-' }} &middot; {{ e.location }} ({{ e.condition }})
+      {% if e.notes %}&middot; <em>{{ e.notes }}</em>{% endif %}
+    </div>
+    <div class="mono" style="color:#64748b; font-size:0.75rem; margin-top:0.2rem;">
+      Event Hash: {{ e.event_hash }}
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% endblock %}

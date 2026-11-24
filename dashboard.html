@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% block title %}Dashboard — Forensic Evidence Ledger{% endblock %}
+{% block content %}
+<div class="page-header">
+  <h1>Dashboard</h1>
+  {% if has_perm('cases') %}
+  <div style="display:flex; gap:0.5rem;">
+    <a class="btn" href="{{ url_for('create_case') }}">+ New Case</a>
+    <a class="btn btn-secondary" href="{{ url_for('register_evidence') }}">+ Register Evidence</a>
+  </div>
+  {% endif %}
+</div>
+
+<div class="stats-grid">
+  <div class="stat-card">
+    <div class="stat-label">Cases</div>
+    <div class="stat-value">{{ stats.cases }}</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-label">Evidence</div>
+    <div class="stat-value">{{ stats.evidence }}</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-label">Transfers</div>
+    <div class="stat-value">{{ stats.transfers }}</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-label">Alerts</div>
+    <div class="stat-value" style="color:{{ '#f87171' if stats.alerts > 0 else 'inherit' }}">{{ stats.alerts }}</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-label">Verified</div>
+    <div class="stat-value" style="color:#34d399">{{ stats.verified }}</div>
+  </div>
+</div>
+
+<div class="card">
+  <h3>Recent Audit Activity</h3>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Time</th>
+          <th>Actor</th>
+          <th>Event</th>
+          <th>Details</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for row in recent %}
+        <tr>
+          <td class="mono">{{ row.logged_at }}</td>
+          <td>{{ row.username or 'system' }}</td>
+          <td><strong>{{ row.action }}</strong></td>
+          <td>{{ row.target }}{% if row.detail %}: {{ row.detail }}{% endif %}</td>
+        </tr>
+        {% else %}
+        <tr><td colspan="4" style="color:var(--muted);">No audit activity recorded yet.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

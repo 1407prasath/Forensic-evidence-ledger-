@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Sign In — Forensic Evidence Ledger</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}"/>
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <span class="brand">FORENSIC EVIDENCE LEDGER <span>Chain-of-Custody &amp; Integrity System</span></span>
+    </div>
+  </header>
+
+  <div class="login-wrap">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for cat, msg in messages %}
+          <div class="alert alert-error">{{ msg }}</div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+    <div class="card">
+      <h2 style="margin-bottom:0.25rem;">Secure Sign In</h2>
+      <p style="color:var(--muted); font-size:0.88rem; margin-bottom:1.15rem;">Digital forensic evidence management</p>
+
+      <form method="post">
+        <div class="form-group">
+          <label for="username">Username</label>
+          <input id="username" name="username" type="text" required autocomplete="username"/>
+        </div>
+        <div class="form-group">
+          <label for="password">Password</label>
+          <input id="password" name="password" type="password" required autocomplete="current-password"/>
+        </div>
+        <button class="btn" type="submit">Sign in</button>
+      </form>
+
+      <div class="demo-box">
+        <strong style="color:#cbd5e1; display:block; margin-bottom:0.35rem;">Demo accounts</strong>
+        admin/admin123 &middot; officer/officer123 &middot; lab/lab123 &middot;
+        custodian/custodian123 &middot; reviewer/reviewer123
+      </div>
+    </div>
+  </div>
+</body>
+</html>

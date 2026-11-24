@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block title %}Verification — {{ r.evidence_id }}{% endblock %}
+{% block content %}
+<div class="page-header">
+  <h1>Integrity Verification &mdash; {{ r.evidence_id }}</h1>
+  <a class="btn btn-secondary" href="{{ url_for('evidence_detail', evidence_id=r.evidence_id) }}">&larr; Back to Evidence</a>
+</div>
+
+{% if r.status == "VERIFIED" %}
+<div class="alert alert-success">
+  <strong>PASS &mdash; VERIFIED:</strong> File SHA-256 matches the registered reference hash and the custody hash-chain is intact.
+</div>
+{% elif r.status == "FILE_MISSING" %}
+<div class="alert alert-error">
+  <strong>FAIL &mdash; FILE_MISSING:</strong> The stored evidence file was not found on disk.
+</div>
+{% else %}
+<div class="alert alert-error">
+  <strong>FAIL &mdash; POSSIBLE TAMPERING:</strong> Integrity failure detected! File hash mismatch or broken custody chain.
+</div>
+{% endif %}
+
+<div class="card">
+  <div class="table-wrap">
+    <table>
+      <tr><th style="width:210px;">Registered SHA-256</th><td class="mono">{{ r.registered_hash }}</td></tr>
+      <tr><th>Current SHA-256</th><td class="mono">{{ r.current_hash }}</td></tr>
+      <tr>
+        <th>File Hash Match</th>
+        <td>
+          {% if r.hash_match %}
+            <span class="badge badge-ok">VALID (MATCH)</span>
+          {% else %}
+            <span class="badge badge-bad">INVALID (MISMATCH)</span>
+          {% endif %}
+        </td>
+      </tr>
+      <tr>
+        <th>Custody Hash-Chain</th>
+        <td>
+          {% if r.chain_intact %}
+            <span class="badge badge-ok">INTACT ({{ events|length }} events verified)</span>
+          {% else %}
+            <span class="badge badge-bad">BROKEN AT EVENT {{ (r.broken_at_event or 0) + 1 }}</span>
+          {% endif %}
+        </td>
+      </tr>
+      <tr><th>Checked At (UTC)</th><td class="mono">{{ r.checked_at }}</td></tr>
+    </table>
+  </div>
+</div>
+{% endblock %}

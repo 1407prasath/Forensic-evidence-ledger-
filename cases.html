@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block title %}Cases — Forensic Evidence Ledger{% endblock %}
+{% block content %}
+<div class="page-header">
+  <h1>Cases</h1>
+  {% if has_perm('cases') %}
+  <a class="btn" href="{{ url_for('create_case') }}">+ New Case</a>
+  {% endif %}
+</div>
+
+<form class="search-bar" method="get">
+  <input type="text" name="q" value="{{ q }}" placeholder="Search FIR, case or crime type"/>
+  <button class="btn" type="submit">Search</button>
+</form>
+
+<div class="card">
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Case ID</th>
+          <th>FIR</th>
+          <th>Crime</th>
+          <th>Station</th>
+          <th>Officer</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for c in cases %}
+        <tr>
+          <td><strong>{{ c.case_id }}</strong></td>
+          <td>{{ c.fir_number }}</td>
+          <td>{{ c.crime_type }}</td>
+          <td>{{ c.police_station }}</td>
+          <td>{{ c.officer }}</td>
+          <td><span class="badge badge-open">{{ c.status }}</span></td>
+        </tr>
+        {% else %}
+        <tr><td colspan="6" style="color:var(--muted);">No cases found. Click "+ New Case" to create one.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

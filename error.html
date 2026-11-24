@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block title %}Error {{ code }} — Forensic Evidence Ledger{% endblock %}
+{% block content %}
+<div class="card" style="text-align:center; padding:2.5rem 1rem;">
+  <h1 style="font-size:2.5rem; color:#f87171; margin-bottom:0.5rem;">{{ code }}</h1>
+  <p style="margin-bottom:1.25rem;">{{ message }}</p>
+  <a class="btn" href="{{ url_for('dashboard') }}">Return to Dashboard</a>
+</div>
+{% endblock %}

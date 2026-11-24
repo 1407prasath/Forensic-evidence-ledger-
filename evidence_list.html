@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block title %}Evidence — Forensic Evidence Ledger{% endblock %}
+{% block content %}
+<div class="page-header">
+  <h1>Evidence</h1>
+  {% if has_perm('evidence') %}
+  <a class="btn" href="{{ url_for('register_evidence') }}">+ Register Evidence</a>
+  {% endif %}
+</div>
+
+<form class="search-bar" method="get">
+  <input type="text" name="q" value="{{ q }}" placeholder="Search evidence ID, case, FIR or type"/>
+  <button class="btn" type="submit">Search</button>
+</form>
+
+<div class="card">
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Case / FIR</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>File Hash (SHA-256)</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for item in items %}
+        <tr>
+          <td><a href="{{ url_for('evidence_detail', evidence_id=item.evidence_id) }}">{{ item.evidence_id }}</a></td>
+          <td>{{ item.case_id }} / {{ item.fir_number }}</td>
+          <td>{{ item.evidence_type }}</td>
+          <td>{{ item.description or item.file_name }}</td>
+          <td class="mono">{{ item.sha256[:20] }}...</td>
+          <td>
+            <a class="btn btn-secondary" style="padding:0.35rem 0.65rem; font-size:0.8rem;" href="{{ url_for('verify_page', evidence_id=item.evidence_id) }}">Verify</a>
+          </td>
+        </tr>
+        {% else %}
+        <tr><td colspan="6" style="color:var(--muted);">No evidence registered yet.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}
