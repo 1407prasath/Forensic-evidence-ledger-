@@ -19,7 +19,8 @@ ALLOWED_EXT = {
     "zip", "mp4", "mp3", "csv", "json", "eml"
 }
 
-app = Flask(__name__)
+app = Flask(__name__, template_folder=".", static_folder=".", static_url_path="/static")
+
 app.config["SECRET_KEY"] = os.environ.get("FEL_SECRET", "forensic-ledger-secret-key-2026")
 app.config["MAX_CONTENT_LENGTH"] = 100 * 1024 * 1024  # 100 MB upload limit
 
